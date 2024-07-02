@@ -165,7 +165,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
-/*module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
+module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
   scope: rg
   name: 'bastion'
   params: {
@@ -175,7 +175,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     enableIpConnect: true
     enableShareableLink: true
   }
-}*/
+}
 
 module prefix 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
   scope: rg
@@ -213,7 +213,32 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
         name: 'bep1'
         loadbalancerBackendAddresses: [
         ]
-
+      }
+    ]
+    probes: [
+      {
+        intervalInSeconds: 10
+        name: 'probe1'
+        numberOfProbes: 5
+        port: 80
+        protocol: 'Http'
+        requestPath: '/http-probe'
+      }
+    ]
+    loadBalancingRules: [
+      {
+        backendAddressPoolName: 'bep1'
+        backendPort: 80
+        disableOutboundSnat: true
+        enableFloatingIP: false
+        enableTcpReset: false
+        frontendIPConfigurationName: 'publicipconfig1'
+        frontendPort: 80
+        idleTimeoutInMinutes: 5
+        loadDistribution: 'Default'
+        name: 'publicIPLBRule1'
+        probeName: 'probe1'
+        protocol: 'Tcp'
       }
     ]
   }
