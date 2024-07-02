@@ -41,7 +41,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
   }
 }
 
-module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
+/*module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
   scope: rg
   name: 'vnetgw'
   params: {
@@ -51,7 +51,7 @@ module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
     skuName: 'VpnGw1AZ'
     vNetResourceId: virtualNetwork.outputs.resourceId
   }
-}
+}*/
 
 module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
@@ -163,7 +163,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
-module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
+/*module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
   scope: rg
   name: 'bastion'
   params: {
@@ -173,7 +173,7 @@ module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
     enableIpConnect: true
     enableShareableLink: true
   }
-}
+}*/
 
 module prefix 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
   scope: rg
