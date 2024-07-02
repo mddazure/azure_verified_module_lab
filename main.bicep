@@ -44,6 +44,7 @@ module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
   scope: rg
   name: 'vnetgw'
   params: {
+    publicIpZones: [1,2,3]
     gatewayType:  'Vpn'
     name: 'vnetgw'
     skuName: 'VpnGw1AZ'
@@ -55,6 +56,7 @@ module vm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
   params: {
+    encryptionAtHost: false
     adminUsername: 'marc'
     adminPassword: 'Nienke040598'
     imageReference: {
