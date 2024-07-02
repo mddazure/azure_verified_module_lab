@@ -97,5 +97,23 @@ module vm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     osType: 'Windows'
     vmSize: 'Standard_DS2_v2'
     zone: 1
+    extensionCustomScriptConfig: {
+      settings: {
+        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
+      }
+    }
   }
 }
+
+module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
+  scope: rg
+  name: 'bastion'
+  params: {
+    name: 'bastion'
+    virtualNetworkResourceId: virtualNetwork.outputs.resourceId
+    skuName: 'Standard'
+    enableIpConnect: true
+    enableShareableLink: true
+  }
+}
+
