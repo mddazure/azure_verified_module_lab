@@ -100,6 +100,7 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     vmSize: 'Standard_DS2_v2'
     zone: 1
     extensionCustomScriptConfig: {
+      enabled: true
       settings: {
         commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
       }
@@ -154,6 +155,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     vmSize: 'Standard_DS2_v2'
     zone: 1
     extensionCustomScriptConfig: {
+      enabled: true
       settings: {
         commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
       }
