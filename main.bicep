@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'rg1'
+param rgname string = 'rg2'
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSku = '2022-Datacenter'
@@ -99,11 +99,8 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     osType: 'Windows'
     vmSize: 'Standard_DS2_v2'
     zone: 1
-    extensionCustomScriptConfig: {
-      enabled: true
-      extensionCustomScriptProtectedSetting: {
-        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
-      }
+    extensionCustomScriptProtectedSetting: {
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
     }
   }
 }
@@ -154,11 +151,8 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     osType: 'Windows'
     vmSize: 'Standard_DS2_v2'
     zone: 1
-    extensionCustomScriptConfig: {
-      enabled: true
-      extensionCustomScriptProtectedSetting: {
-        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
-      }
+    extensionCustomScriptProtectedSetting: {
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
     }
   }
 }
