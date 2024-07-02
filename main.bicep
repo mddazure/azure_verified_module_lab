@@ -1,4 +1,5 @@
 param location string = 'swedencentral'
+param rgname string = 'rg1'
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSku = '2022-Datacenter'
@@ -6,7 +7,7 @@ var imageSku = '2022-Datacenter'
 targetScope = 'subscription'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
-  name: 'rg'
+  name: rgname
   location: location
 }
 
@@ -52,7 +53,7 @@ module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
   }
 }
 
-module vm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
+module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
   params: {
@@ -72,6 +73,61 @@ module vm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig1'
           subnetresourceid: virtualNetwork.outputs.subnetResourceIds[0]
+          loadBalancerBackendAddressPools: lb.outputs.backendpools[0]
+          }
+        ]
+        nicSuffix: '-nic-01'
+      }
+      {
+        ipconfigurations: [
+          {
+          name: 'ipconfig2'
+          subnetresourceid: virtualNetwork.outputs.subnetResourceIds[1]
+          }
+        ]
+        nicSuffix: '-nic-02'
+      }
+    ]
+      
+    
+    osDisk: {
+      diskSizeGB: 128
+      managedDisk: {
+        storageAccountType: 'Standard_LRS'
+      }
+    }
+    osType: 'Windows'
+    vmSize: 'Standard_DS2_v2'
+    zone: 1
+    extensionCustomScriptConfig: {
+      settings: {
+        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
+      }
+    }
+  }
+}
+
+module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
+  scope: rg
+  name: 'vm2'
+  params: {
+    encryptionAtHost: false
+    adminUsername: 'marc'
+    adminPassword: 'Nienke040598'
+    imageReference: {
+      publisher: imagePublisher
+      offer: imageOffer
+      sku: imageSku
+      version: 'latest'
+    }
+    name: 'vm2'
+    nicConfigurations: [
+      {
+        ipconfigurations: [
+          {
+          name: 'ipconfig1'
+          subnetresourceid: virtualNetwork.outputs.subnetResourceIds[0]
+          loadBalancerBackendAddressPools: lb.outputs.backendpools[0]
           }
         ]
         nicSuffix: '-nic-01'
@@ -117,3 +173,44 @@ module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
   }
 }
 
+module prefix 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
+  scope: rg
+  name: 'prefix'
+  params: {
+    name: 'prefix'
+    prefixLength: 30
+  }
+}
+
+module lbfep 'br/public:avm/res/network/public-ip-address:0.4.1' = {
+  scope: rg
+  name: 'lbfep'
+  params: {
+    name: 'lbfep'
+    publicIpPrefixResourceId: prefix.outputs.resourceId
+    skuName: 'Standard'
+    skuTier: 'Regional'
+  }
+}
+
+module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
+  scope: rg
+  name: 'lb'
+  params: {
+    name: 'lb'
+    frontendIPConfigurations: [
+      {
+        name: 'publicipconfig1'
+        publicIPAddressId: lbfep.outputs.resourceId
+      }
+    ]
+    backendAddressPools: [
+      {
+        name: 'bep1'
+        loadbalancerBackendAddresses: [
+        ]
+
+      }
+    ]
+  }
+}
