@@ -19,15 +19,23 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
     name: 'vnet'
     addressPrefixes: [
       '10.0.0.0/16'
+      'ab:cd:ef::/48'
     ] 
     subnets: [
       {
-        addressPrefix: '10.0.0.0/24'
+        addressPrefixes: [
+          '10.0.0.0/24'
+          'ab:cd:ef:00::/64'
+        ]
         name: 'vmsubnet0'
       }
       {
-        addressPrefix: '10.0.1.0/24'
+        addressPrefixes:[
+           '10.0.1.0/24'
+           'ab:cd:ef:01::/64'
+        ]
         name: 'vmsubnet1'
+        
       }
       {
         addressPrefix: '10.0.254.0/24'
@@ -39,6 +47,30 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
       }
     ]
   }
+}
+
+module nsg 'br/public:avm/res/network/network-security-group:0.3.0' = {
+  scope: rg
+  name: 'nsg'
+  params: {
+    name: 'nsg'
+    securityRules: [
+      {
+      name: 'AllowHTTPInbound'
+      properties: {
+        access: 'Allow'
+        description: 'Allow HTTP inbound traffic'
+        destinationAddressPrefix: '*'
+        destinationPortRange: '80'
+        direction: 'Inbound'
+        priority: 100
+        protocol: 'Tcp'
+        sourceAddressPrefix: '*'
+        sourcePortRange: '*'
+      }
+      }
+    ]
+    }
 }
 
 /*module vnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
@@ -113,6 +145,8 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
+
+
 module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm2'
@@ -133,6 +167,11 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig1'
           subnetresourceid: virtualNetwork.outputs.subnetResourceIds[0]
+          loadBalancerBackendAddressPools:[
+            {
+              id: lb.outputs.backendpools[0].id
+            }
+          ]
           }
         ]
         nicSuffix: '-nic-01'
@@ -142,11 +181,6 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig2'
           subnetresourceid: virtualNetwork.outputs.subnetResourceIds[1]
-          loadBalancerBackendAddressPools:[
-            {
-              id: lb.outputs.backendpools[0].id
-            }
-          ]
           }
         ]
         nicSuffix: '-nic-02'
