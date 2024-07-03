@@ -23,6 +23,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
     ] 
     subnets: [
       {
+        addressPrefix: ''
         addressPrefixes: [
           '10.0.0.0/24'
           'ab:cd:ef00::/64'
@@ -30,6 +31,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
         name: 'vmsubnet0'
       }
       {
+        addressPrefix: ''
         addressPrefixes:[
            '10.0.1.0/24'
            'ab:cd:ef01::/64'
