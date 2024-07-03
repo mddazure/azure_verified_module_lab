@@ -103,6 +103,10 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     osType: 'Windows'
     vmSize: 'Standard_DS2_v2'
     zone: 1
+    extensionCustomScriptConfig: {
+      enabled: true
+      fileData: []
+    }
     extensionCustomScriptProtectedSetting: {
       commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
     }
@@ -160,6 +164,8 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     vmSize: 'Standard_DS2_v2'
     zone: 1
     extensionCustomScriptConfig: {
+      enabled: true
+      fileData:[]
       extensionCustomScriptProtectedSetting: {
         commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
       }
@@ -168,7 +174,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
-module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
+/*module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
   scope: rg
   name: 'bastion'
   params: {
@@ -178,7 +184,7 @@ module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
     enableIpConnect: true
     enableShareableLink: true
   }
-}
+}*/
 
 module prefix 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
   scope: rg
