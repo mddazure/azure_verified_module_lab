@@ -159,9 +159,12 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     osType: 'Windows'
     vmSize: 'Standard_DS2_v2'
     zone: 1
-    extensionCustomScriptProtectedSetting: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
+    extensionCustomScriptConfig: {
+      extensionCustomScriptProtectedSetting: {
+        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
+      }
     }
+    
   }
 }
 
