@@ -109,6 +109,9 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
             {
               id: lb.outputs.backendpools[0].id
             }
+            {
+              id: lb.outputs.backendpools[1].id
+            }
           ]
           }
         ]
@@ -171,6 +174,9 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
             {
               id: lb.outputs.backendpools[0].id
             }
+            {
+              id: lb.outputs.backendpools[1].id
+            }
           ]
           }
         ]
@@ -220,21 +226,33 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }*/
 
-module prefix 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
+module prefixv4 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
   scope: rg
-  name: 'prefix'
+  name: 'prefixv4'
   params: {
-    name: 'prefix'
+    name: 'prefixv4'
     prefixLength: 30
   }
 }
 
-module lbfep 'br/public:avm/res/network/public-ip-address:0.4.1' = {
+module lbfepv4 'br/public:avm/res/network/public-ip-address:0.4.1' = {
   scope: rg
-  name: 'lbfep'
+  name: 'lbfepv4'
   params: {
-    name: 'lbfep'
-    publicIpPrefixResourceId: prefix.outputs.resourceId
+    name: 'lbfepv4'
+    publicIPAddressVersion: 'IPv4'
+    publicIpPrefixResourceId: prefixv4.outputs.resourceId
+    skuName: 'Standard'
+    skuTier: 'Regional'
+  }
+}
+
+module lbfepv6 'br/public:avm/res/network/public-ip-address:0.4.1' = {
+  scope: rg
+  name: 'lbfepv6'
+  params: {
+    name: 'lbfepv6'
+    publicIPAddressVersion: 'IPv6'
     skuName: 'Standard'
     skuTier: 'Regional'
   }
@@ -247,8 +265,12 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
     name: 'lb'
     frontendIPConfigurations: [
       {
-        name: 'publicipconfig1'
-        publicIPAddressId: lbfep.outputs.resourceId
+        name: 'publicipconfigv4'
+        publicIPAddressId: lbfepv4.outputs.resourceId
+      }
+      {
+        name: 'publicipconfigv6'
+        publicIPAddressId: lbfepv6.outputs.resourceId
       }
     ]
     backendAddressPools: [
@@ -257,11 +279,26 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
         loadbalancerBackendAddresses: [
         ]
       }
+      {
+        name: 'bep2'
+        loadbalancerBackendAddresses: [
+        ]
+      }
     ]
     probes: [
       {
         intervalInSeconds: 10
-        name: 'probe1'
+        family: 'IPv4'
+        name: 'probev4'
+        numberOfProbes: 5
+        port: 80
+        protocol: 'Http'
+        requestPath: '/http-probe'
+      }
+      {
+        intervalInSeconds: 10
+        family: 'IPv6'
+        name: 'probev6'
         numberOfProbes: 5
         port: 80
         protocol: 'Http'
@@ -275,12 +312,26 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
         disableOutboundSnat: true
         enableFloatingIP: false
         enableTcpReset: false
-        frontendIPConfigurationName: 'publicipconfig1'
+        frontendIPConfigurationName: 'publicipconfigv4'
         frontendPort: 80
         idleTimeoutInMinutes: 5
         loadDistribution: 'Default'
-        name: 'publicIPLBRule1'
-        probeName: 'probe1'
+        name: 'publicIPLBRulev4'
+        probeName: 'probev4'
+        protocol: 'Tcp'
+      }
+      {
+        backendAddressPoolName: 'bep2'
+        backendPort: 80
+        disableOutboundSnat: true
+        enableFloatingIP: false
+        enableTcpReset: false
+        frontendIPConfigurationName: 'publicipconfigv6'
+        frontendPort: 80
+        idleTimeoutInMinutes: 5
+        loadDistribution: 'Default'
+        name: 'publicIPLBRulev6'
+        probeName: 'probev6'
         protocol: 'Tcp'
       }
     ]
