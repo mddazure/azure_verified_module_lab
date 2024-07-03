@@ -25,10 +25,16 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
       {
         addressPrefix: '10.0.0.0/24'
         name: 'vmsubnet0'
+        networkSecurityGroup: {
+          id: nsg.outputs.resourceId
+        }
       }
       {
         addressPrefix: '10.0.1.0/24'
         name: 'vmsubnet1'
+        networkSecurityGroup: {
+          id: nsg.outputs.resourceId
+        }
         
       }
       {
@@ -195,11 +201,10 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     extensionCustomScriptConfig: {
       enabled: true
       fileData:[]
-      extensionCustomScriptProtectedSetting: {
-        commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
-      }
     }
-    
+    extensionCustomScriptProtectedSetting: {
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)' 
+    }   
   }
 }
 
