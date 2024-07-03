@@ -35,7 +35,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
         name: 'AzureBastionSubnet'
       }
       {
-        addressPrefixes: '10.0.255.0/24'
+        addressPrefix: '10.0.255.0/24'
         name: 'GatewaySubnet'
       }
     ]
