@@ -25,24 +25,28 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
       {
         addressPrefixes: [
           '10.0.0.0/24'
-          'ab:cd:ef:00::/64'
+          'ab:cd:ef00::/64'
         ]
         name: 'vmsubnet0'
       }
       {
         addressPrefixes:[
            '10.0.1.0/24'
-           'ab:cd:ef:01::/64'
+           'ab:cd:ef01::/64'
         ]
         name: 'vmsubnet1'
         
       }
       {
-        addressPrefix: '10.0.254.0/24'
+        addressPrefixes:[ 
+          '10.0.254.0/24'
+        ]
         name: 'AzureBastionSubnet'
       }
       {
-        addressPrefix: '10.0.255.0/24'
+        addressPrefixes: [
+          '10.0.255.0/24'
+        ]
         name: 'GatewaySubnet'
       }
     ]
