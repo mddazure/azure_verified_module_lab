@@ -19,6 +19,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.6' = {
     name: 'vnet'
     addressPrefixes: [
       '10.0.0.0/16' 
+      'abcd:de12:3456::/48'
     ]
     subnets: [
       {
@@ -102,9 +103,7 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
             {
               id: lb.outputs.backendpools[0].id
             }
-            {
-              id: lb.outputs.backendpools[1].id
-            }
+
           ]
           }
         ]
@@ -166,9 +165,6 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           loadBalancerBackendAddressPools:[
             {
               id: lb.outputs.backendpools[0].id
-            }
-            {
-              id: lb.outputs.backendpools[1].id
             }
           ]
           }
@@ -272,26 +268,12 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
         loadbalancerBackendAddresses: [
         ]
       }
-      {
-        name: 'bep2'
-        loadbalancerBackendAddresses: [
-        ]
-      }
     ]
     probes: [
       {
         intervalInSeconds: 10
         family: 'IPv4'
         name: 'probev4'
-        numberOfProbes: 5
-        port: 80
-        protocol: 'Http'
-        requestPath: '/http-probe'
-      }
-      {
-        intervalInSeconds: 10
-        family: 'IPv6'
-        name: 'probev6'
         numberOfProbes: 5
         port: 80
         protocol: 'Http'
@@ -311,20 +293,6 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
         loadDistribution: 'Default'
         name: 'publicIPLBRulev4'
         probeName: 'probev4'
-        protocol: 'Tcp'
-      }
-      {
-        backendAddressPoolName: 'bep2'
-        backendPort: 80
-        disableOutboundSnat: true
-        enableFloatingIP: false
-        enableTcpReset: false
-        frontendIPConfigurationName: 'publicipconfigv6'
-        frontendPort: 80
-        idleTimeoutInMinutes: 5
-        loadDistribution: 'Default'
-        name: 'publicIPLBRulev6'
-        probeName: 'probev6'
         protocol: 'Tcp'
       }
     ]
