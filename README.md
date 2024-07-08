@@ -1,0 +1,1 @@
+![images](/azure_verified_module_lab.png)
