@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'rg0'
+param rgname string = 'avm-rg'
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSku = '2022-Datacenter'
