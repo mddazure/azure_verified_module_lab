@@ -8,9 +8,9 @@ This is not a reference implementation and it should not be used to as the basis
 
 ## Lab 
 
-The lab comprises:
+The lab is comprised of:
 - A server VNET and a client VNET
-- A pair of load balanced Windowns Server VMs running a basic web server, in the server VNET
+- A pair of load balanced Windows Server VMs running a basic web server, in the server VNET
 - A Windows 11 client VM in the client VNET
 - Azure Bastion in the client VNET
 - A Storage Account, with a Private Endpoint in the server VNET and accompanying Private DNS Zone
