@@ -23,9 +23,9 @@ The point of the lab is not so much in the resources and their functionality, wh
 
 ## Deploy
 
-Log in to Azure Cloud Shell at https://shell.azure.com/ and select Bash.
+Open a command prompt.
 
-Ensure Azure CLI and extensions are up to date:
+Ensure the Azure CLI and extensions are installed and up to date:
   
       az upgrade --yes
   
@@ -46,3 +46,5 @@ Deploy the Bicep template:
       az deployment sub create --location swedencentral --template-file main.bicep
 
 Verify that all components in the diagram above have been deployed to the resourcegroup `avm-rg` and are healthy. 
+
+NB: Deploying Azure Verified Modules from Cloud Shell does not work, it is apparently not possible to access the AVM registry.
