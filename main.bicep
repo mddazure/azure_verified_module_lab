@@ -78,6 +78,7 @@ module clientvnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
     ]
   }
 }
+
 module servernsg 'br/public:avm/res/network/network-security-group:0.3.0' = {
   scope: rg
   name: 'servernsg'
@@ -143,7 +144,9 @@ module servervnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = 
   scope: rg
   name: 'servervnetgw'
   params: {
+    activeActive: false
     publicIpZones: [1,2,3]
+    gatewayPipName: 'srvgw-pip${uniqueString(rg.name)}'
     gatewayType:  'Vpn'
     name: 'servervnetgw'
     skuName: 'VpnGw1AZ'
@@ -155,7 +158,9 @@ module clientvnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = 
   scope: rg
   name: 'clientvnetgw'
   params: {
+    activeActive: false
     publicIpZones: [1,2,3]
+     gatewayPipName: 'clgw-pip${uniqueString(rg.name)}'
     gatewayType:  'Vpn'
     name: 'clientvnetgw'
     skuName: 'VpnGw1AZ'
@@ -192,6 +197,7 @@ module clientserverconn 'br/public:avm/res/network/connection:0.1.2' = {
     vpnSharedKey: 'AzureA1b'
   }
 }
+/*
 module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
@@ -494,3 +500,4 @@ module privateDNSZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
     ]
   }
 }
+*/
