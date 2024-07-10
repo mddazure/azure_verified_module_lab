@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'rg2'
+param rgname string = 'rg0'
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSku = '2022-Datacenter'
@@ -17,8 +17,10 @@ resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
 module servervnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
   name: 'servervnet'
   scope: rg
-  
-  params: {
+  dependsOn:[
+    servernsg
+  ]
+    params: {
     name: 'servervnet'
     addressPrefixes: [
       '10.0.0.0/16' 
@@ -28,18 +30,17 @@ module servervnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
       {
         addressPrefix: '10.0.0.0/24'
         name: 'vmsubnet0'
-        networkSecurityGroup: {
-          id: servernsg.outputs.resourceId
-        }
+        networkSecurityGroupResourceId: servernsg.outputs.resourceId
       }
       {
         addressPrefix: '10.0.1.0/24'
         name: 'vmsubnet1'
-        networkSecurityGroup: {
-          id: servernsg.outputs.resourceId
-        }
-        
+        networkSecurityGroupResourceId: servernsg.outputs.resourceId
       }
+      {
+        addressPrefix: '10.0.2.0/24'
+        name: 'pesubnet'
+      }       
       {
         addressPrefix: '10.0.255.0/24'
         name: 'GatewaySubnet'
@@ -51,7 +52,9 @@ module servervnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
 module clientvnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
   name: 'clientvnet'
   scope: rg
-  
+  dependsOn:[
+    clientnsg
+  ]
   params: {
     name: 'clientvnet'
     addressPrefixes: [
@@ -62,9 +65,7 @@ module clientvnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
       {
         addressPrefix: '172.16.0.0/24'
         name: 'vmsubnet0'
-        networkSecurityGroup: {
-          id: clientnsg.outputs.resourceId
-        }
+        networkSecurityGroupResourceId: clientnsg.outputs.resourceId
       }
       {
         addressPrefix: '172.16.254.0/24'
@@ -77,8 +78,6 @@ module clientvnet 'br/public:avm/res/network/virtual-network:0.1.6' = {
     ]
   }
 }
-
-
 module servernsg 'br/public:avm/res/network/network-security-group:0.3.0' = {
   scope: rg
   name: 'servernsg'
@@ -140,7 +139,6 @@ module clientnsg 'br/public:avm/res/network/network-security-group:0.3.0' = {
     ]
     }
 }
-
 module servervnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
   scope: rg
   name: 'servervnetgw'
@@ -194,7 +192,6 @@ module clientserverconn 'br/public:avm/res/network/connection:0.1.2' = {
     vpnSharedKey: 'AzureA1b'
   }
 }
-
 module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
@@ -214,7 +211,7 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
         ipconfigurations: [
           {
           name: 'ipconfig1'
-          subnetresourceid: servervnet.outputs.subnetResourceIds[0]
+          subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet0'
           loadBalancerBackendAddressPools:[
             {
               id: lb.outputs.backendpools[0].id
@@ -229,7 +226,8 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
         ipconfigurations: [
           {
           name: 'ipconfig2'
-          subnetresourceid: servervnet.outputs.subnetResourceIds[1]
+          subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
+          
           }
         ]
         nicSuffix: '-nic-02'
@@ -255,9 +253,6 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     }
   }
 }
-
-
-
 module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm2'
@@ -277,7 +272,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
         ipconfigurations: [
           {
           name: 'ipconfig1'
-          subnetresourceid: servervnet.outputs.subnetResourceIds[0]
+          subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet0'
           loadBalancerBackendAddressPools:[
             {
               id: lb.outputs.backendpools[0].id
@@ -291,7 +286,7 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
         ipconfigurations: [
           {
           name: 'ipconfig2'
-          subnetresourceid: servervnet.outputs.subnetResourceIds[1]
+          subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
           }
         ]
         nicSuffix: '-nic-02'
@@ -464,22 +459,38 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
     ]
   }
 }
-/*module storageaccount 'br/public:avm/res/storage/storage-account:0.9.1' = {
+module storageaccount 'br/public:avm/res/storage/storage-account:0.9.1' = {
   scope: rg
   name: 'storageaccount'
   params: {
-    name: 'avm-${uniqueString(rg.id)}'
+    name: 'avm${uniqueString(rg.id)}'
     kind: 'StorageV2'
     location: location
     skuName: 'Standard_LRS'
     privateEndpoints:[
       {
         name: 'privateEndpoint1'
+        privateDnsZoneResourceIds: [
+          privateDNSZone.outputs.resourceId
+        ]
         service: 'blob'
-        subresourceName: 'blob'
-
-        subnetId: servervnet.outputs.subnetResourceIds[0]
+        subnetResourceId: '${servervnet.outputs.resourceId}/subnets/pesubnet' 
       }
     ]
   }
-}*/
+}
+module privateDNSZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
+  scope: rg
+  name: 'privateDNSZone'
+  params: {
+    name: 'privatelink.blob.core.windows.net'
+    virtualNetworkLinks: [
+      {
+        virtualNetworkResourceId: servervnet.outputs.resourceId
+      }
+      {
+        virtualNetworkResourceId: clientvnet.outputs.resourceId
+      }
+    ]
+  }
+}
