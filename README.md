@@ -34,6 +34,7 @@ If necessary select your target subscription:
       az account set --subscription <Name or ID of subscription>
 
 Clone the  GitHub repository: 
+
       git clone https://github.com/mddazure/azure_verified_module_lab
 
 Change directory:
