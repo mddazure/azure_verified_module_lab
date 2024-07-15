@@ -7,6 +7,7 @@ var clientimagePublisher = 'microsoftwindowsdesktop'
 var clientimageOffer = 'windows-11'
 var clientimageSku = 'win11-22h2-pro'
 
+
 targetScope = 'subscription'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
@@ -146,7 +147,7 @@ module servervnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = 
   params: {
     activeActive: false
     publicIpZones: [1,2,3]
-    gatewayPipName: 'srvgw-pip${uniqueString(rg.name)}'
+    gatewayPipName: 'srvgw-pip${deployment().name}'
     gatewayType:  'Vpn'
     name: 'servervnetgw'
     skuName: 'VpnGw1AZ'
@@ -160,7 +161,7 @@ module clientvnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = 
   params: {
     activeActive: false
     publicIpZones: [1,2,3]
-     gatewayPipName: 'clgw-pip${uniqueString(rg.name)}'
+    gatewayPipName: 'clgw-pip${deployment().name}'
     gatewayType:  'Vpn'
     name: 'clientvnetgw'
     skuName: 'VpnGw1AZ'
@@ -197,7 +198,7 @@ module clientserverconn 'br/public:avm/res/network/connection:0.1.2' = {
     vpnSharedKey: 'AzureA1b'
   }
 }
-/*
+
 module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
@@ -500,4 +501,4 @@ module privateDNSZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
     ]
   }
 }
-*/
+

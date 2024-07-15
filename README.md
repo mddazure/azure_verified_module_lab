@@ -21,6 +21,13 @@ The point of the lab is not so much in the resources and their functionality, wh
 
 ![images](/azure_verified_module_lab.png)
 
+## Learnings
+
+Some points / issues I stumbled on writing the deployment:
+
+- VS Code 
+
+
 ## Deploy
 
 Open a command prompt.
