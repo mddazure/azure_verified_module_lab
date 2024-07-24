@@ -1,5 +1,5 @@
 param location string = 'swedencentral'
-param rgname string = 'avm-rg'
+param rgname string = 'gsa-rg'
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSku = '2022-Datacenter'
@@ -141,6 +141,7 @@ module clientnsg 'br/public:avm/res/network/network-security-group:0.3.0' = {
     ]
     }
 }
+/*
 module servervnetgw 'br/public:avm/res/network/virtual-network-gateway:0.1.3' = {
   scope: rg
   name: 'servervnetgw'
@@ -198,7 +199,7 @@ module clientserverconn 'br/public:avm/res/network/connection:0.1.2' = {
     vpnSharedKey: 'AzureA1b'
   }
 }
-
+*/
 module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'vm1'
@@ -234,7 +235,11 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig2'
           subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
-          
+          loadBalancerBackendAddressPools:[
+            {
+              id: ilb.outputs.backendpools[0].id
+            }
+          ]
           }
         ]
         nicSuffix: '-nic-02'
@@ -294,6 +299,11 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig2'
           subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
+          loadBalancerBackendAddressPools:[
+            {
+              id: ilb.outputs.backendpools[0].id
+            }
+          ]
           }
         ]
         nicSuffix: '-nic-02'
@@ -341,6 +351,7 @@ module gsaconnector 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig1'
           subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
+          publicIpAddressId: gsaconnectorpipv4.outputs.resourceId
           }
         ]
         nicSuffix: '-nic-01'
@@ -400,6 +411,7 @@ module clientvm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
     zone: 1  
   }
 }
+/*
 module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
   scope: rg
   name: 'bastion'
@@ -411,7 +423,7 @@ module bastion 'br/public:avm/res/network/bastion-host:0.2.1' = {
     enableShareableLink: true
   }
 }
-
+*/
 module prefixv4 'br/public:avm/res/network/public-ip-prefix:0.3.0' = {
   scope: rg
   name: 'prefixv4'
@@ -449,6 +461,18 @@ module clientpipv4 'br/public:avm/res/network/public-ip-address:0.4.1' = {
   name: 'clientpipv4'
   params: {
     name: 'clientpipv4'
+    publicIPAddressVersion: 'IPv4'
+    publicIpPrefixResourceId: prefixv4.outputs.resourceId
+    skuName: 'Standard'
+    skuTier: 'Regional'
+  }
+}
+
+module gsaconnectorpipv4 'br/public:avm/res/network/public-ip-address:0.4.1' = {
+  scope: rg
+  name: 'gsaconnectorpipv4'
+  params: {
+    name: 'gsaconnectorpipv4'
     publicIPAddressVersion: 'IPv4'
     publicIpPrefixResourceId: prefixv4.outputs.resourceId
     skuName: 'Standard'
@@ -507,6 +531,57 @@ module lb 'br/public:avm/res/network/load-balancer:0.2.0' = {
     ]
   }
 }
+
+module ilb 'br/public:avm/res/network/load-balancer:0.2.0' = {
+  scope: rg
+  name: 'ilb'
+  params: {
+    name: 'ilb'
+    frontendIPConfigurations: [
+      {
+        name: 'privateipconfigv4'
+        privateIPAddress: '10.0.1.100'
+      }
+
+    ]
+    backendAddressPools: [
+      {
+        name: 'ilbbep1'
+        loadbalancerBackendAddresses: [
+        ]
+      }
+    ]
+    probes: [
+      {
+        intervalInSeconds: 10
+        family: 'IPv4'
+        name: 'probev4'
+        numberOfProbes: 5
+        port: 80
+        protocol: 'Http'
+        requestPath: '/'
+      }
+    ]
+    loadBalancingRules: [
+      {
+        backendAddressPoolName: 'bep1'
+        backendPort: 80
+        disableOutboundSnat: true
+        enableFloatingIP: false
+        enableTcpReset: false
+        frontendIPConfigurationName: 'privateipconfigv4'
+        frontendPort: 80
+        idleTimeoutInMinutes: 5
+        loadDistribution: 'Default'
+        name: 'privateIPLBRulev4'
+        probeName: 'probev4'
+        protocol: 'Tcp'
+      }
+    ]
+  }
+}
+
+/*
 module storageaccount 'br/public:avm/res/storage/storage-account:0.9.1' = {
   scope: rg
   name: 'storageaccount'
@@ -542,4 +617,4 @@ module privateDNSZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
     ]
   }
 }
-
+*/
