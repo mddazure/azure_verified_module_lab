@@ -224,7 +224,9 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
             {
               id: lb.outputs.backendpools[0].id
             }
-
+            {
+              id: ilb.outputs.backendpools[0].id
+            }
           ]
           }
         ]
@@ -235,11 +237,6 @@ module vm1 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig2'
           subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
-          loadBalancerBackendAddressPools:[
-            {
-              id: ilb.outputs.backendpools[0].id
-            }
-          ]
           }
         ]
         nicSuffix: '-nic-02'
@@ -289,6 +286,9 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
             {
               id: lb.outputs.backendpools[0].id
             }
+            {
+              id: ilb.outputs.backendpools[0].id
+            }
           ]
           }
         ]
@@ -299,11 +299,6 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
           {
           name: 'ipconfig2'
           subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
-          loadBalancerBackendAddressPools:[
-            {
-              id: ilb.outputs.backendpools[0].id
-            }
-          ]
           }
         ]
         nicSuffix: '-nic-02'
