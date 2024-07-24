@@ -540,7 +540,7 @@ module ilb 'br/public:avm/res/network/load-balancer:0.2.0' = {
     frontendIPConfigurations: [
       {
         name: 'privateipconfigv4'
-        privateIPAddress: '10.0.1.100'
+        subnetId: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
       }
 
     ]
@@ -564,7 +564,7 @@ module ilb 'br/public:avm/res/network/load-balancer:0.2.0' = {
     ]
     loadBalancingRules: [
       {
-        backendAddressPoolName: 'bep1'
+        backendAddressPoolName: 'ilbbep1'
         backendPort: 80
         disableOutboundSnat: true
         enableFloatingIP: false
