@@ -320,6 +320,47 @@ module vm2 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
+module gsaconnector 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
+  scope: rg
+  name: 'gsaconnector'
+  params: {
+    encryptionAtHost: false
+    adminUsername: 'marc'
+    adminPassword: 'Nienke040598'
+    imageReference: {
+      publisher: imagePublisher
+      offer: imageOffer
+      sku: imageSku
+      version: 'latest'
+    }
+    name: 'gsaconnector'
+    nicConfigurations: [
+ 
+      {
+        ipconfigurations: [
+          {
+          name: 'ipconfig1'
+          subnetresourceid: '${servervnet.outputs.resourceId}/subnets/vmsubnet1'
+          }
+        ]
+        nicSuffix: '-nic-01'
+      }
+    ]
+      
+    
+    osDisk: {
+      diskSizeGB: 128
+      managedDisk: {
+        storageAccountType: 'Standard_LRS'
+      }
+    }
+    osType: 'Windows'
+    vmSize: 'Standard_DS2_v2'
+    zone: 1   
+  }
+}
+
+
 module clientvm 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   scope: rg
   name: 'clientvm'
