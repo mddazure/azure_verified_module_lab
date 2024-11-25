@@ -25,8 +25,7 @@ The point of the lab is not so much in the resources and their functionality, wh
 
 Some points / issues I stumbled on writing the deployment:
 
-- VS Code 
-
+- VS Code IntelliSense for Bicep does not work well with AVM.
 
 ## Deploy
 
